@@ -25,6 +25,8 @@ package com.intuit.karate.core;
 
 import com.intuit.karate.StringUtils;
 
+import java.util.Objects;
+
 /**
  * someday this will be part of the parser, but until then apologies for this
  * monstrosity :|
@@ -46,7 +48,7 @@ public class MatchStep {
             raw = raw.substring(4).trim();
         }
         boolean contains = false;
-        boolean not = false;
+        boolean not;
         boolean only = false;
         boolean any = false;
         int spacePos = raw.indexOf(' ');
@@ -108,6 +110,13 @@ public class MatchStep {
         type = getType(each, not, contains, only, any);
     }
 
+    MatchStep(String name, String path, MatchType type, String expected) {
+        this.name = name;
+        this.path = path;
+        this.type = type;
+        this.expected = expected;
+    }
+
     private static int min(int a, int b) {
         if (a == -1) {
             return b;
@@ -143,4 +152,19 @@ public class MatchStep {
         return not ? MatchType.NOT_EQUALS : MatchType.EQUALS;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MatchStep matchStep = (MatchStep) o;
+        return name.equals(matchStep.name) &&
+                Objects.equals(path, matchStep.path) &&
+                type == matchStep.type &&
+                Objects.equals(expected, matchStep.expected);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, path, type, expected);
+    }
 }
